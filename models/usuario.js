@@ -35,7 +35,7 @@ const UsuarioSchema = Schema({
     type: String,
     required: [true, "El DNI es obligatorio"],
     unique: true,
-    match: [/^[0-9]{8}[A-Za-z]$/, "El DNI debe tener 8 números seguidos"],
+    match: [/^[0-9]{8}$/, "El DNI debe tener 8 números seguidos"],
   },
   img: { type: String },
   rol: {

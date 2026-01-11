@@ -2,6 +2,19 @@ const { Schema, model } = require("mongoose");
 
 const ProductoSchema = Schema({
   img: { type: String },
+
+  categoriaId: {
+    type: Schema.Types.ObjectId,
+    ref: "Categoria",
+    required: true,
+  },
+
+  creadoPor: {
+    type: Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true,
+  },
+
   nombreProducto: {
     type: String,
     required: [true, "El nombre del producto es obligatorio"],
@@ -21,6 +34,25 @@ const ProductoSchema = Schema({
     required: [true, "La descripción del producto es obligatoria"],
     minlength: [10, "La descripción debe tener al menos 10 caracteres"],
     maxlength: [500, "La descripción no puede tener más de 500 caracteres"],
+  },
+  stock: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  whatsappEnabled: {
+    type: Boolean,
+    default: true,
+  },
+
+  whatsappMessage: {
+    type: String,
+    maxlength: 300,
+  },
+
+  activo: {
+    type: Boolean,
+    default: true,
   },
 });
 
