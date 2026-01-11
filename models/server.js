@@ -14,6 +14,7 @@ class Server {
       productos: "/api/productos",
       carritos: "/api/carritos",
       ordenes: "/api/ordenes",
+      movimientos: "/api/movimientos",
     };
 
     // Conectar a base de datos
@@ -41,11 +42,13 @@ class Server {
     this.app.use(express.static("public"));
   }
   routes() {
+    this.app.use(this.paths.auth, require("../routes/auth"));
     this.app.use(this.paths.usuarios, require("../routes/usuarios"));
     this.app.use(this.paths.categorias, require("../routes/categorias"));
     this.app.use(this.paths.productos, require("../routes/productos"));
     this.app.use(this.paths.carritos, require("../routes/carritos"));
     this.app.use(this.paths.ordenes, require("../routes/ordens"));
+    this.app.use(this.paths.movimientos, require("../routes/movimientos"));
   }
 
   listen() {
