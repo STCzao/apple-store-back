@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const CategoriaSchema = Schema({
-  nombre: {
+  nombreCategoria: {
     type: String,
     required: [true, "El nombre es obligatorio"],
     unique: true,

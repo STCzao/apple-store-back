@@ -24,6 +24,12 @@ const ProductoSchema = Schema({
       "El nombre del producto no puede tener más de 50 caracteres",
     ],
   },
+  marca: {
+    type: String,
+    required: [true, "La marca del producto es obligatoria"],
+    minlength: [2, "La marca debe tener al menos 2 caracteres"],
+    maxlength: [30, "La marca no puede tener más de 30 caracteres"],
+  },
   precio: {
     type: Number,
     required: [true, "El precio del producto es obligatorio"],
@@ -35,17 +41,17 @@ const ProductoSchema = Schema({
     minlength: [10, "La descripción debe tener al menos 10 caracteres"],
     maxlength: [500, "La descripción no puede tener más de 500 caracteres"],
   },
-  stock: {
+  inventario: {
     type: Number,
     required: true,
     min: 0,
   },
-  whatsappEnabled: {
+  whatsappActivo: {
     type: Boolean,
     default: true,
   },
 
-  whatsappMessage: {
+  whatsappMensaje: {
     type: String,
     maxlength: 300,
   },

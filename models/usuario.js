@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const UsuarioSchema = Schema({
-  nombre: {
+  nombreUsuario: {
     type: String,
     required: [true, "El nombre es obligatorio"],
     minlength: [3, "El nombre debe tener al menos 3 caracteres"],
@@ -18,7 +18,7 @@ const UsuarioSchema = Schema({
     match: [/^\S+@\S+\.\S+$/, "Debe ser un correo válido"],
     maxlength: [35, "El correo no puede tener más de 35 caracteres"],
   },
-  password: {
+  contraseña: {
     type: String,
     required: [true, "La contraseña es obligatoria"],
     minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
