@@ -3,12 +3,11 @@ const { Schema, model } = require("mongoose");
 const ProductoSchema = Schema({
   img: { type: String },
 
-  categoriaId: {
+  categoria: {
     type: Schema.Types.ObjectId,
     ref: "Categoria",
     required: true,
   },
-
   creadoPor: {
     type: Schema.Types.ObjectId,
     ref: "Usuario",
