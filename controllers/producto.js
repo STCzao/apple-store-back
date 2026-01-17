@@ -3,9 +3,9 @@ const Producto = require("../models/producto");
 
 // Función para normalizar texto (convertir a mayusculas)
 
-const normalizarTexto = (texto) => {
+const escapeRegex = (texto) => {
   if (typeof texto !== "string") return "";
-  return texto.trim().toUpperCase();
+  return texto.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
 // Obtener productos con paginacion
@@ -21,8 +21,8 @@ const ObtenerProductos = async (req = request, res = response) => {
       search,
     } = req.query;
 
-    const pageNum = Number(desde);
-    const limitNum = Number(limite);
+    const pageNum = Math.max(1, parseInt(desde, 10) || 1);
+    const limitNum = Math.max(1, parseInt(limite, 10) || 12);
     const skip = (pageNum - 1) * limitNum;
 
     const query = { activo: true };
@@ -32,15 +32,16 @@ const ObtenerProductos = async (req = request, res = response) => {
     }
 
     if (marca) {
-      query.marca = normalizarTexto(marca);
+      query.marca = new RegExp("^" + escapeRegex(marca), "i");
     }
 
     if (nombreProducto) {
-      query.nombreProducto = normalizarTexto(nombreProducto);
+      query.nombreProducto = new RegExp(escapeRegex(nombreProducto), "i");
     }
 
     if (search) {
-      const searchRegex = new RegExp(search, "i");
+      const s = escapeRegex(search); 
+      const searchRegex = new RegExp(s, "i");
       query.$or = [
         { nombreProducto: searchRegex },
         { marca: searchRegex },
@@ -54,7 +55,7 @@ const ObtenerProductos = async (req = request, res = response) => {
         .skip(skip)
         .limit(limitNum)
         .populate("categoria", "nombreCategoria")
-        .populate("creadoPor", "nombreUsuario email"),
+        .populate("creadoPor", "nombreUsuario correo"),
     ]);
 
     res.json({
