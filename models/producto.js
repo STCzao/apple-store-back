@@ -40,6 +40,12 @@ const ProductoSchema = Schema({
     minlength: [10, "La descripción debe tener al menos 10 caracteres"],
     maxlength: [500, "La descripción no puede tener más de 500 caracteres"],
   },
+
+  destacado: {
+    type: Boolean,
+    default: false,
+  },
+
   inventario: {
     type: Number,
     required: true,
@@ -55,7 +61,7 @@ const ProductoSchema = Schema({
     maxlength: 300,
   },
 
-  activo: {
+  estado: {
     type: Boolean,
     default: true,
   },
