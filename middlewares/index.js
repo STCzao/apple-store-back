@@ -2,7 +2,7 @@ const { validarCampos } = require("./validarCampos");
 const { validarOrden } = require("./validarOrden");
 const { validarJWT } = require("./validarJWT");
 const { validarCarrito } = require("./validarCarrito");
-const {validarRoles} = require("./validarRoles");
+const { validarRoles } = require("./validarRoles");
 
 module.exports = {
   validarCampos,
@@ -10,4 +10,4 @@ module.exports = {
   validarJWT,
   validarCarrito,
   validarRoles,
-};  
+};
