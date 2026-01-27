@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const { dbConnection } = require("../database/config");
-const { buscar } = require("../controllers/buscar");
 
 class Server {
   constructor() {
@@ -10,12 +9,12 @@ class Server {
 
     this.paths = {
       auth: "/api/auth",
-      usuarios: "/api/usuarios",
-      categorias: "/api/categorias",
-      productos: "/api/productos",
-      carritos: "/api/carritos",
-      ordenes: "/api/ordenes",
-      movimientos: "/api/movimientos",
+      usuario: "/api/usuario",
+      categoria: "/api/categoria",
+      producto: "/api/producto",
+      carrito: "/api/carrito",
+      orden: "/api/orden",
+      movimiento: "/api/movimiento",
       buscar: "/api/buscar",
     };
 
@@ -45,12 +44,13 @@ class Server {
   }
   routes() {
     this.app.use(this.paths.auth, require("../routes/auth"));
-    this.app.use(this.paths.usuarios, require("../routes/usuarios"));
-    this.app.use(this.paths.categorias, require("../routes/categorias"));
-    this.app.use(this.paths.productos, require("../routes/productos"));
-    this.app.use(this.paths.carritos, require("../routes/carritos"));
-    this.app.use(this.paths.ordenes, require("../routes/ordens"));
-    this.app.use(this.paths.movimientos, require("../routes/movimientos"));
+    this.app.use(this.paths.usuario, require("../routes/usuario"));
+    this.app.use(this.paths.categoria, require("../routes/categoria"));
+    this.app.use(this.paths.producto, require("../routes/producto"));
+    this.app.use(this.paths.carrito, require("../routes/carrito"));
+    this.app.use(this.paths.orden, require("../routes/ordenes"));
+    // TODO: Implementar ruta de movimientos en Fase 3
+    // this.app.use(this.paths.movimiento, require("../routes/movimiento"));
     this.app.use(this.paths.buscar, require("../routes/buscar"));
   }
 

@@ -1,7 +1,28 @@
-const e = require("cors");
+/**
+ * HELPER: Calcular Totales del Carrito
+ *
+ * Calcula los subtotales de cada item y el total general del carrito
+ *
+ * @param {Array} items - Array de items del carrito
+ * @param {Object} items[].precioSnapshot - Precio del producto al momento de agregarlo
+ * @param {Number} items[].cantidad - Cantidad de unidades
+ *
+ * @returns {Object} Objeto con items calculados, subtotal y total
+ *
+ * Notas:
+ * - Usa precioSnapshot para mantener precios históricos
+ * - Valida que los items sean válidos antes de calcular
+ * - Redondea a 2 decimales para evitar problemas de precisión
+ */
 
 const calcularTotalesCarrito = (items = []) => {
-  if (!Array.isArray(items) || items.length === 0) {
+  // Validar que items sea un arreglo
+  if (!Array.isArray(items)) {
+    throw new Error("El parámetro items debe ser un arreglo.");
+  }
+
+  // Si el carrito está vacío, retornamos totales en cero
+  if (items.length === 0) {
     return {
       items: [],
       subtotal: 0,
@@ -13,59 +34,40 @@ const calcularTotalesCarrito = (items = []) => {
   let subtotalGeneral = 0;
 
   const itemsCalculados = items.map((item) => {
+    // Validar que el item tenga los campos necesarios
+    if (!item.precioSnapshot || !item.cantidad) {
+      throw new Error("Cada item debe tener precioSnapshot y cantidad");
+    }
+
+    // Validar que los valores sean números positivos
+    if (item.precioSnapshot < 0 || item.cantidad <= 0) {
+      throw new Error("El precio y la cantidad deben ser valores positivos");
+    }
+
+    // Calcular subtotal del item (precio × cantidad)
     const subtotalItem = item.precioSnapshot * item.cantidad;
+
+    // Acumular al subtotal general
     subtotalGeneral += subtotalItem;
 
+    // Retornar el item con su subtotal calculado
     return {
       ...item,
-      subtotal: subtotalItem,
+      subtotal: Number(subtotalItem.toFixed(2)), // Redondear a 2 decimales
     };
   });
 
-  // Aplicamos descuentos si existen
-  let montoDescuento = 0;
+  // Redondear subtotal a 2 decimales para evitar problemas de precisión
+  subtotalGeneral = Number(subtotalGeneral.toFixed(2));
 
-  switch (descuento?.tipo) {
-    case "PORCENTAJE":
-      montoDescuento = subtotalGeneral * (descuento.valor / 100);
-      break;
-    case "FIJO":
-      montoDescuento = descuento.valor;
-      break;
-    default:
-      break;
-  }
-
-  // Calculamos el total asegurandonos que el descuento no exceda el subtotal
-  montoDescuento = Math.min(montoDescuento, subtotalGeneral);
-
-  //Retornamos el total calculado con descuento aplicado
-  const subtotalConDescuento = subtotalGeneral - montoDescuento;
-
-  //Calculamos impuestos si es necesario (aqui asumimos un 0% de impuestos para simplificar)
-  let montoImpuestos = 0;
-
-  if (impuestos?.aplicaIVA) {
-    montoImpuestos = subtotalConDescuento * 0.21; // Asumiendo un 21% de IVA
-  }
-
-  // Calculamos envio si es necesario
-  let montoEnvio = 0;
-
-  if (envio?.costo) {
-    montoEnvio = envio.costo;
-  }
-
-  //Total final
-  const totalFinal = subtotalConDescuento + montoImpuestos + montoEnvio;
+  // Por ahora, total = subtotal
+  // En el futuro puedes agregar: descuentos, impuestos, envío
+  const total = subtotalGeneral;
 
   return {
     items: itemsCalculados,
     subtotal: subtotalGeneral,
-    montoDescuento: montoDescuento,
-    montoImpuestos: montoImpuestos,
-    montoEnvio: montoEnvio,
-    total: totalFinal,
+    total,
   };
 };
 
