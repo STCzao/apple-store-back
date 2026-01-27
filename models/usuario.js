@@ -37,6 +37,51 @@ const UsuarioSchema = Schema({
     unique: true,
     match: [/^[0-9]{8}$/, "El DNI debe tener 8 números seguidos"],
   },
+
+  //Datos fiscales opcionales
+  tipoFacturacion: {
+    type: String,
+    enum: ["CONSUMIDOR_FINAL", "RESPONSABLE_INSCRIPTO"],
+    default: "CONSUMIDOR_FINAL",
+  },
+
+  CUIL: {
+    type: String,
+    required: [true, "El CUIL es obligatorio"],
+    unique: true,
+    validate: {
+      validator: function (v) {
+        return /^\d{2}-\d{8}-\d{1}$/.test(v);
+      },
+      message: "CUIL inválido. Formato: 20-12345678-9"
+    },
+  },
+
+  razonSocial: String, //Opcional, solo para factura A
+
+  domicilioFiscal: {
+    calle: {
+      type: String,
+      required: [true, "La calle es obligatoria"]
+    },
+    numero: {
+      type: String,
+      required: [true, "El número es obligatorio"]
+    },
+    ciudad: {
+      type: String,
+      required: [true, "La ciudad es obligatoria"]
+    },
+    provincia: {
+      type: String,
+      required: [true, "La provincia es obligatoria"]
+    },
+    codigoPostal: {
+      type: String,
+      required: [true, "El código postal es obligatorio"]
+    }
+  },
+
   img: { type: String },
   rol: {
     type: String,
@@ -51,7 +96,7 @@ const UsuarioSchema = Schema({
 
 // Sobreescribir JSON para no devolver campos sensibles
 UsuarioSchema.methods.toJSON = function () {
-  const { __v, password, resetToken, resetTokenExp, _id, ...usuario } =
+  const { __v, contraseña, resetToken, resetTokenExp, _id, ...usuario } =
     this.toObject();
   usuario.uid = _id;
   return usuario;
