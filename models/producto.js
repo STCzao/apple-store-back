@@ -17,6 +17,8 @@ const ProductoSchema = Schema({
   nombreProducto: {
     type: String,
     required: [true, "El nombre del producto es obligatorio"],
+    lowercase: true,
+    trim: true,
     minlength: [3, "El nombre del producto debe tener al menos 3 caracteres"],
     maxlength: [
       50,
@@ -26,6 +28,8 @@ const ProductoSchema = Schema({
   marca: {
     type: String,
     required: [true, "La marca del producto es obligatoria"],
+    lowercase: true,
+    trim: true,
     minlength: [2, "La marca debe tener al menos 2 caracteres"],
     maxlength: [30, "La marca no puede tener más de 30 caracteres"],
   },
@@ -65,6 +69,6 @@ const ProductoSchema = Schema({
     type: Boolean,
     default: true,
   },
-});
+}, { timestamps: true });
 
 module.exports = model("Producto", ProductoSchema);
