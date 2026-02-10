@@ -11,7 +11,7 @@
  */
 
 const { Producto, Categoria } = require("../models/index");
-const { validObjectId } = require("../helpers/validObjectId");
+const { validarObjectId } = require("../helpers/validarObjectId");
 
 /**
  * Obtener productos paginados
@@ -56,7 +56,7 @@ const obtenerProductos = async (limite = 12, desde = 0) => {
  */
 const obtenerProductoPorId = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id del producto no es válido");
   }
 
@@ -98,7 +98,7 @@ const crearProducto = async (
   }
 
   // Validar ObjectId de categoría
-  if (!validObjectId(categoria)) {
+  if (!validarObjectId(categoria)) {
     throw new Error("El id de la categoría no es válido");
   }
 
@@ -164,7 +164,7 @@ const crearProducto = async (
  */
 const actualizarProducto = async (id, datosActualizar) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id del producto no es válido");
   }
 
@@ -220,7 +220,7 @@ const actualizarProducto = async (id, datosActualizar) => {
 
   // Si viene categoría, validar que existe
   if (categoria) {
-    if (!validObjectId(categoria)) {
+    if (!validarObjectId(categoria)) {
       throw new Error("El id de la categoría no es válido");
     }
 
@@ -271,7 +271,7 @@ const actualizarProducto = async (id, datosActualizar) => {
  */
 const eliminarProducto = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id del producto no es válido");
   }
 

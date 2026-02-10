@@ -12,7 +12,7 @@
 
 const { Carrito, Producto } = require("../models/index");
 const { calcularTotalesCarrito } = require("../helpers/calcularTotalesCarrito");
-const { validObjectId } = require("../helpers/validObjectId");
+const { validarObjectId } = require("../helpers/validarObjectId");
 const { copiarSnapshotProducto } = require("../helpers/copiarSnapshotProducto");
 
 /**
@@ -55,7 +55,7 @@ const obtenerCarritoActivo = async (usuarioId = null) => {
 
 const agregarProducto = async (usuarioId, productoId, cantidad = 1) => {
   // Validar ObjectId
-  if (!validObjectId(productoId)) {
+  if (!validarObjectId(productoId)) {
     throw new Error("El id del producto no es válido");
   }
 
@@ -144,7 +144,7 @@ const agregarProducto = async (usuarioId, productoId, cantidad = 1) => {
 
 const actualizarCantidad = async (usuarioId, productoId, nuevaCantidad) => {
   // Validar ObjectId
-  if (!validObjectId(productoId)) {
+  if (!validarObjectId(productoId)) {
     throw new Error("El id del producto no es válido");
   }
 
@@ -208,7 +208,7 @@ const actualizarCantidad = async (usuarioId, productoId, nuevaCantidad) => {
 
 const eliminarProducto = async (usuarioId, productoId) => {
   // Validar ObjectId
-  if (!validObjectId(productoId)) {
+  if (!validarObjectId(productoId)) {
     throw new Error("El id del producto no es válido");
   }
 
@@ -275,7 +275,7 @@ const vaciarCarrito = async (usuarioId) => {
 
 const cambiarEstado = async (carritoId, nuevoEstado) => {
   // Validar ObjectId
-  if (!validObjectId(carritoId)) {
+  if (!validarObjectId(carritoId)) {
     throw new Error("El ID del carrito no es válido");
   }
 

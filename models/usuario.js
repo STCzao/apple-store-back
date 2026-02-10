@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const UsuarioSchema = Schema({
   nombreUsuario: {
@@ -102,4 +102,4 @@ UsuarioSchema.methods.toJSON = function () {
   return usuario;
 };
 
-module.exports = model("Usuario", UsuarioSchema);
+module.exports = models.Usuario || model("Usuario", UsuarioSchema);

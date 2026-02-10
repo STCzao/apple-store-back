@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const OrdenSchema = new Schema(
   {
@@ -125,4 +125,4 @@ const OrdenSchema = new Schema(
   { timestamps: true },
 );
 
-module.exports = model("Orden", OrdenSchema);
+module.exports = models.Orden || model("Orden", OrdenSchema);

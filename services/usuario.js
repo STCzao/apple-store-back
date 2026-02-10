@@ -12,7 +12,7 @@
 
 const Usuario = require("../models/usuario");
 const bcryptjs = require("bcryptjs");
-const { validObjectId } = require("../helpers/validObjectId");
+const { validarObjectId } = require("../helpers/validarObjectId");
 
 /**
  * Obtener usuarios paginados (solo admin)
@@ -55,7 +55,7 @@ const obtenerUsuarios = async (limite = 10, desde = 0) => {
  */
 const obtenerUsuarioPorId = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El ID de usuario no es válido");
   }
 
@@ -130,7 +130,7 @@ const actualizarPerfil = async (usuarioId, datosActualizar) => {
  */
 const actualizarUsuario = async (id, datosActualizar) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El ID de usuario no es válido");
   }
 
@@ -161,7 +161,7 @@ const actualizarUsuario = async (id, datosActualizar) => {
  */
 const eliminarUsuario = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El ID de usuario no es válido");
   }
 
