@@ -12,7 +12,6 @@ const {
   validarCampos,
   validarJWT,
   esAdminRole,
-  tieneRole,
 } = require("../middlewares/index");
 const {
   usuariosGet,

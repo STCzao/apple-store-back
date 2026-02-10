@@ -6,7 +6,7 @@
  * @module CategoriaModel
  */
 
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const CategoriaSchema = Schema(
   {
@@ -61,4 +61,4 @@ CategoriaSchema.methods.toJSON = function () {
   return categoria;
 };
 
-module.exports = model("Categoria", CategoriaSchema);
+module.exports = models.Categoria || model("Categoria", CategoriaSchema);

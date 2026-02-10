@@ -10,7 +10,7 @@
  */
 
 const Categoria = require("../models/categoria");
-const { validObjectId } = require("../helpers/validObjectId");
+const { validarObjectId } = require("../helpers/validarObjectId");
 
 /**
  * Obtener categorías paginadas
@@ -53,7 +53,7 @@ const obtenerCategorias = async (limite = 10, desde = 0) => {
  */
 const obtenerCategoriaPorId = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id de la categoría no es válido");
   }
 
@@ -118,7 +118,7 @@ const crearCategoria = async ({ nombreCategoria, descripcion, img }, usuarioId) 
  */
 const actualizarCategoria = async (id, datosActualizar) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id de la categoría no es válido");
   }
 
@@ -170,7 +170,7 @@ const actualizarCategoria = async (id, datosActualizar) => {
  */
 const eliminarCategoria = async (id) => {
   // Validar ObjectId
-  if (!validObjectId(id)) {
+  if (!validarObjectId(id)) {
     throw new Error("El id de la categoría no es válido");
   }
 

@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const MovimientoStockSchema = Schema({
   productoId: {
@@ -40,4 +40,4 @@ const MovimientoStockSchema = Schema({
   },
 });
 
-module.exports = model("MovimientoStock", MovimientoStockSchema);
+module.exports = models.MovimientoStock || model("MovimientoStock", MovimientoStockSchema);

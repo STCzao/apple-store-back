@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const CarritoSchema = new Schema(
   {
@@ -44,4 +44,4 @@ const CarritoSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = model("Carrito", CarritoSchema);
+module.exports = models.Carrito || model("Carrito", CarritoSchema);

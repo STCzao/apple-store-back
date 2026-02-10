@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, models } = require("mongoose");
 
 const ProductoSchema = Schema({
   img: { type: String },
@@ -71,4 +71,4 @@ const ProductoSchema = Schema({
   },
 }, { timestamps: true });
 
-module.exports = model("Producto", ProductoSchema);
+module.exports = models.Producto || model("Producto", ProductoSchema);

@@ -12,7 +12,7 @@
  */
 
 const { Orden, Carrito, Producto, Usuario } = require("../models/index");
-const { validObjectId } = require("../helpers/validObjectId");
+const { validarObjectId } = require("../helpers/validarObjectId");
 const { validarStock } = require("../helpers/validarStock");
 
 /**
@@ -25,7 +25,7 @@ const { validarStock } = require("../helpers/validarStock");
  */
 const obtenerOrdenes = async (usuarioId, limite = 10, desde = 0) => {
   // Validaciones
-  if (!validObjectId(usuarioId)) {
+  if (!validarObjectId(usuarioId)) {
     throw new Error("El id del usuario no es válido");
   }
 
@@ -67,11 +67,11 @@ const obtenerOrdenes = async (usuarioId, limite = 10, desde = 0) => {
  */
 const obtenerOrdenPorId = async (ordenId, usuarioId) => {
   // Validar ObjectId
-  if (!validObjectId(ordenId)) {
+  if (!validarObjectId(ordenId)) {
     throw new Error("El id de la orden no es válido");
   }
 
-  if (!validObjectId(usuarioId)) {
+  if (!validarObjectId(usuarioId)) {
     throw new Error("El id del usuario no es válido");
   }
 
@@ -103,7 +103,7 @@ const obtenerOrdenPorId = async (ordenId, usuarioId) => {
  */
 const crearOrden = async (usuarioId, datosFacturacion, moneda = "ars") => {
   // Validar ObjectId
-  if (!validObjectId(usuarioId)) {
+  if (!validarObjectId(usuarioId)) {
     throw new Error("El id del usuario no es válido");
   }
 
@@ -245,7 +245,7 @@ const crearOrden = async (usuarioId, datosFacturacion, moneda = "ars") => {
  */
 const actualizarEstadoOrden = async (ordenId, nuevoEstado, datosPago = {}) => {
   // Validar ObjectId
-  if (!validObjectId(ordenId)) {
+  if (!validarObjectId(ordenId)) {
     throw new Error("El id de la orden no es válido");
   }
 
@@ -335,11 +335,11 @@ const actualizarEstadoOrden = async (ordenId, nuevoEstado, datosPago = {}) => {
  */
 const cancelarOrden = async (ordenId, usuarioId) => {
   // Validar ObjectId
-  if (!validObjectId(ordenId)) {
+  if (!validarObjectId(ordenId)) {
     throw new Error("El id de la orden no es válido");
   }
 
-  if (!validObjectId(usuarioId)) {
+  if (!validarObjectId(usuarioId)) {
     throw new Error("El id del usuario no es válido");
   }
 
