@@ -96,7 +96,7 @@ const obtenerOrdenPorId = async (ordenId, usuarioId) => {
  * Crear nueva orden desde carrito activo
  *
  * @param {String} usuarioId - ID del usuario
- * @param {Object} datosFacturacion - Datos fiscales del usuario
+ * @param {Object} datosFacturacion - Datos fiscales del usuario (opcional - usa datos del usuario si no se proporciona)
  * @param {String} moneda - Moneda (ars/usd)
  * @returns {Promise<Object>} orden creada
  * @throws {Error} Si carrito vacío, sin stock o datos inválidos
@@ -112,10 +112,21 @@ const crearOrden = async (usuarioId, datosFacturacion, moneda = "ars") => {
     throw new Error("La moneda debe ser 'ars' o 'usd'");
   }
 
-  // Validar datos de facturación
-  if (!datosFacturacion || typeof datosFacturacion !== "object") {
-    throw new Error("Los datos de facturación son obligatorios");
+  // Obtener datos del usuario
+  const usuario = await Usuario.findById(usuarioId);
+  if (!usuario) {
+    throw new Error("El usuario no existe");
   }
+
+  // Usar datos proporcionados o los del usuario
+  const facturaData = datosFacturacion || {
+    tipoFacturacion: usuario.tipoFacturacion || "CONSUMIDOR_FINAL",
+    nombreCompleto: usuario.nombreUsuario,
+    DNI: usuario.DNI,
+    CUIL: usuario.CUIL || null,
+    razonSocial: usuario.razonSocial || null,
+    domicilioFiscal: usuario.domicilioFiscal,
+  };
 
   const {
     tipoFacturacion,
@@ -124,7 +135,7 @@ const crearOrden = async (usuarioId, datosFacturacion, moneda = "ars") => {
     CUIL,
     razonSocial,
     domicilioFiscal,
-  } = datosFacturacion;
+  } = facturaData;
 
   // Validar campos obligatorios según tipo de facturación
   if (!tipoFacturacion || !["CONSUMIDOR_FINAL", "RESPONSABLE_INSCRIPTO"].includes(tipoFacturacion)) {
@@ -223,8 +234,14 @@ const crearOrden = async (usuarioId, datosFacturacion, moneda = "ars") => {
 
   await orden.save();
 
-  // Cambiar estado del carrito a CHEQUEANDO
-  carrito.estado = "CHEQUEANDO";
+  // Descontar inventario de productos inmediatamente
+  await descontarInventario(orden.items);
+
+  // Vaciar el carrito y cambiar estado a COMPLETADO
+  carrito.items = [];
+  carrito.subtotal = 0;
+  carrito.total = 0;
+  carrito.estado = "COMPLETADO";
   await carrito.save();
 
   // Popular antes de retornar

@@ -14,6 +14,8 @@ const { Carrito, Producto } = require("../models/index");
 const { calcularTotalesCarrito } = require("../helpers/calcularTotalesCarrito");
 const { validarObjectId } = require("../helpers/validarObjectId");
 const { copiarSnapshotProducto } = require("../helpers/copiarSnapshotProducto");
+const { validarStock } = require("../helpers/validarStock");
+const producto = require("../models/producto");
 
 /**
  * Obtener o crear carrito activo del usuario
@@ -75,30 +77,27 @@ const agregarProducto = async (usuarioId, productoId, cantidad = 1) => {
   const carrito = await obtenerCarritoActivo(usuarioId);
 
   //Verificar si el producto ya esta en el carrito
-  const itemExistente = carrito.items.find(
-    (item) => item.productoId.toString() === productoId,
-  );
+  const itemExistente = carrito.items.find((item) => {
+    const itemId = item.productoId._id || item.productoId;
+    return itemId.toString() === productoId.toString();
+  });
 
   if (itemExistente) {
     //Producto ya existe --> incrementar cantidad
     const nuevaCantidad = itemExistente.cantidad + cantidadNum;
 
-    //Validar stock disponible
-    if (nuevaCantidad > producto.inventario) {
-      throw new Error(
-        `Stock insuficiente. Disponible: ${producto.inventario}, Solicitado: ${nuevaCantidad}`,
-      );
-    }
+    //Validar que no exceda el stock disponible
 
+    validarStock(producto, nuevaCantidad);
+    
+
+    //Actualizar cantidad y subtotal
     itemExistente.cantidad = nuevaCantidad;
+    itemExistente.subtotal = itemExistente.precioSnapshot * nuevaCantidad;
   } else {
     //Producto no existe --> agregar nuevo item
-    //Validar stock disponible
-    if (cantidadNum > producto.inventario) {
-      throw new Error(
-        `Stock insuficiente. Disponible: ${producto.inventario}, Solicitado: ${cantidadNum}`,
-      );
-    }
+    //Validar stock usando helper
+    validarStock(producto, cantidadNum);
 
     //Crear snapshot del producto
     const { nombreSnapshot, precioSnapshot } = copiarSnapshotProducto(producto);
@@ -159,19 +158,23 @@ const actualizarCantidad = async (usuarioId, productoId, nuevaCantidad) => {
 
   //Buscar el item en el carrito
   const item = carrito.items.find(
-    (item) => item.productoId.toString() === productoId,
+    (item) => {
+      const itemId = item.productoId._id || item.productoId;
+      return itemId.toString() === productoId.toString();
+    }
   );
 
   if (!item) {
     throw new Error("El producto no está en el carrito");
   }
 
-  //Validar stock del producto
+  //Validar estado del producto
   const producto = await Producto.findById(productoId);
   if (!producto || !producto.estado) {
     throw new Error("El producto no existe o no está disponible");
   }
 
+  //Validar stock del producto
   if (cantidadNum > producto.inventario) {
     throw new Error(
       `Stock insuficiente. Disponible: ${producto.inventario}, Solicitado: ${cantidadNum}`,
@@ -217,7 +220,10 @@ const eliminarProducto = async (usuarioId, productoId) => {
 
   //Buscar el item en el carrito
   const itemIndex = carrito.items.findIndex(
-    (item) => item.productoId.toString() === productoId,
+    (item) => {
+      const itemId = item.productoId._id || item.productoId;
+      return itemId.toString() === productoId.toString();
+    }
   );
 
   if (itemIndex === -1) {

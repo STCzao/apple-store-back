@@ -125,4 +125,22 @@ const OrdenSchema = new Schema(
   { timestamps: true },
 );
 
+// Transformar respuesta JSON
+OrdenSchema.methods.toJSON = function () {
+  const { __v, _id, estado, ...orden } = this.toObject();
+  
+  // Mapear estado a estadoOrden con valores más simples
+  const estadoMap = {
+    'PENDIENTE_PAGO': 'pendiente',
+    'PAGADA': 'pagada',
+    'FALLIDA': 'fallida',
+    'CANCELADA': 'cancelada'
+  };
+  
+  orden.uid = _id;
+  orden.estadoOrden = estadoMap[estado] || estado;
+  
+  return orden;
+};
+
 module.exports = models.Orden || model("Orden", OrdenSchema);

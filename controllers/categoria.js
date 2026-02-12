@@ -33,7 +33,7 @@ const categoriasGet = async (req, res = response) => {
 
     res.json({ total, categorias });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -56,7 +56,7 @@ const categoriaGet = async (req, res = response) => {
     res.json({ categoria });
   } catch (error) {
     const statusCode = error.message.includes("no es válido") ? 400 : 404;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -83,10 +83,10 @@ const categoriaPost = async (req, res = response) => {
 
     res.status(201).json({
       categoria,
-      msg: "Categoría creada con éxito",
+      errors: [{ msg: "Categoría creada con éxito" }],
     });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -111,11 +111,11 @@ const categoriaPut = async (req, res = response) => {
 
     res.json({
       categoria,
-      msg: "La categoría se actualizó con éxito",
+      errors: [{ msg: "La categoría se actualizó con éxito" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -138,11 +138,11 @@ const categoriaDelete = async (req, res = response) => {
 
     res.json({
       categoria,
-      msg: `La categoría ${categoria.nombreCategoria} se eliminó con éxito`,
+      errors: [{ msg: `La categoría ${categoria.nombreCategoria} se eliminó con éxito` }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 

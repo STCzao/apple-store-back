@@ -28,7 +28,7 @@ const register = async (req, res = response) => {
 
     res.status(201).json({ usuario, token });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -52,7 +52,7 @@ const login = async (req, res = response) => {
 
     res.json({ usuario, token });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -75,7 +75,7 @@ const renovarToken = async (req, res = response) => {
 
     res.json({ usuario: usuarioActualizado, token });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ errors: [{ msg: error.message }] });
   }
 };
 
