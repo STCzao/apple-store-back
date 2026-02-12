@@ -36,7 +36,7 @@ const productosGet = async (req = request, res = response) => {
 
     res.json({ total, productos });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -60,7 +60,7 @@ const productoGet = async (req = request, res = response) => {
     res.json({ producto });
   } catch (error) {
     const statusCode = error.message.includes("no es válido") ? 400 : 404;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -87,10 +87,10 @@ const productoPost = async (req = request, res = response) => {
 
     res.status(201).json({
       producto,
-      msg: "Producto creado con éxito",
+      errors: [{ msg: "Producto creado con éxito" }],
     });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -115,11 +115,11 @@ const productoPut = async (req = request, res = response) => {
 
     res.json({
       producto,
-      msg: "El producto se actualizó con éxito",
+      errors: [{ msg: "El producto se actualizó con éxito" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -143,11 +143,11 @@ const productoDelete = async (req = request, res = response) => {
 
     res.json({
       producto,
-      msg: `El producto ${producto.nombreProducto} se eliminó con éxito`,
+      errors: [{ msg: `El producto ${producto.nombreProducto} se eliminó con éxito` }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 

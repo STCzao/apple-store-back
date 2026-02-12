@@ -70,48 +70,62 @@ router.post(
   "/",
   [
     validarJWT,
-    check("datosFacturacion", "Los datos de facturación son obligatorios")
-      .notEmpty()
-      .isObject(),
-    check(
-      "datosFacturacion.tipoFacturacion",
-      "El tipo de facturación es obligatorio",
-    ).notEmpty(),
+    // datosFacturacion es opcional - si no se proporciona, se usan los datos del usuario
+    check("datosFacturacion")
+      .optional()
+      .isObject()
+      .withMessage("datosFacturacion debe ser un objeto"),
     check(
       "datosFacturacion.tipoFacturacion",
       "El tipo de facturación debe ser CONSUMIDOR_FINAL o RESPONSABLE_INSCRIPTO",
-    ).isIn(["CONSUMIDOR_FINAL", "RESPONSABLE_INSCRIPTO"]),
+    )
+      .optional()
+      .isIn(["CONSUMIDOR_FINAL", "RESPONSABLE_INSCRIPTO"]),
     check(
       "datosFacturacion.nombreCompleto",
-      "El nombre completo es obligatorio",
-    ).notEmpty(),
-    check("datosFacturacion.DNI", "El DNI es obligatorio").notEmpty(),
+      "El nombre completo debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
+    check("datosFacturacion.DNI", "El DNI debe ser válido")
+      .optional()
+      .isString(),
     check(
       "datosFacturacion.domicilioFiscal",
-      "El domicilio fiscal es obligatorio",
+      "El domicilio fiscal debe ser un objeto",
     )
-      .notEmpty()
+      .optional()
       .isObject(),
     check(
       "datosFacturacion.domicilioFiscal.calle",
-      "La calle es obligatoria",
-    ).notEmpty(),
+      "La calle debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
     check(
       "datosFacturacion.domicilioFiscal.numero",
-      "El número es obligatorio",
-    ).notEmpty(),
+      "El número debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
     check(
       "datosFacturacion.domicilioFiscal.ciudad",
-      "La ciudad es obligatoria",
-    ).notEmpty(),
+      "La ciudad debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
     check(
       "datosFacturacion.domicilioFiscal.provincia",
-      "La provincia es obligatoria",
-    ).notEmpty(),
+      "La provincia debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
     check(
       "datosFacturacion.domicilioFiscal.codigoPostal",
-      "El código postal es obligatorio",
-    ).notEmpty(),
+      "El código postal debe ser una cadena de texto",
+    )
+      .optional()
+      .isString(),
     check("moneda")
       .optional()
       .isIn(["ars", "usd"])

@@ -28,7 +28,7 @@ const buscar = async (req = request, res = response) => {
     // Validar colección permitida
     if (!coleccionesPermitidas.includes(coleccion)) {
       return res.status(400).json({
-        msg: `Las colecciones permitidas son: ${coleccionesPermitidas}`,
+        errors: [{ msg: `Las colecciones permitidas son: ${coleccionesPermitidas}` }],
       });
     }
 
@@ -49,17 +49,17 @@ const buscar = async (req = request, res = response) => {
 
       default:
         return res.status(500).json({
-          msg: "Hubo un error al hacer la búsqueda",
+          errors: [{ msg: "Hubo un error al hacer la búsqueda" }],
         });
     }
 
     res.json({
-      msg,
+      errors: [{ msg }],
       results,
     });
   } catch (error) {
     const statusCode = error.message.includes("vacío") ? 400 : 500;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 

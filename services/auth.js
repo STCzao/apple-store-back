@@ -1,12 +1,12 @@
 /**
  * SERVICE DE AUTENTICACIÓN
- * 
+ *
  * Contiene toda la lógica de negocio para autenticación
  * - Registro de nuevos usuarios
  * - Login y verificación de credenciales
  * - Generación y renovación de tokens JWT
  * - Validaciones de unicidad (correo, DNI, CUIL)
- * 
+ *
  * @module AuthService
  */
 
@@ -16,7 +16,7 @@ const { generarJWT } = require("../helpers/generarJWT");
 
 /**
  * Registrar nuevo usuario
- * 
+ *
  * @param {Object} datosUsuario - Datos del nuevo usuario
  * @param {String} datosUsuario.nombreUsuario - Nombre completo
  * @param {String} datosUsuario.correo - Email único
@@ -29,7 +29,15 @@ const { generarJWT } = require("../helpers/generarJWT");
  * @throws {Error} Si correo, DNI o CUIL ya existen
  */
 const registrarUsuario = async (datosUsuario) => {
-  const { nombreUsuario, correo, contraseña, telefono, DNI, CUIL, domicilioFiscal } = datosUsuario;
+  const {
+    nombreUsuario,
+    correo,
+    contraseña,
+    telefono,
+    DNI,
+    CUIL,
+    domicilioFiscal,
+  } = datosUsuario;
 
   // Verificar si el correo ya existe
   const existeCorreo = await Usuario.findOne({ correo });
@@ -76,7 +84,7 @@ const registrarUsuario = async (datosUsuario) => {
 
 /**
  * Iniciar sesión
- * 
+ *
  * @param {String} correo - Email del usuario
  * @param {String} contraseña - Contraseña sin encriptar
  * @returns {Promise<Object>} { usuario, token }
@@ -108,7 +116,7 @@ const iniciarSesion = async (correo, contraseña) => {
 
 /**
  * Renovar token JWT
- * 
+ *
  * @param {String} usuarioId - ID del usuario autenticado
  * @returns {Promise<Object>} { usuario, token }
  * @throws {Error} Si error al generar token

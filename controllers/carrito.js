@@ -23,7 +23,7 @@ const carritoGet = async (req, res = response) => {
 
     res.json({ carrito });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -49,10 +49,10 @@ const carritoPost = async (req, res = response) => {
 
     res.status(201).json({
       carrito,
-      msg: "Producto agregado al carrito",
+      errors: [{ msg: "Producto agregado al carrito" }],
     });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -79,13 +79,13 @@ const carritoPut = async (req, res = response) => {
 
     res.json({
       carrito,
-      msg: "Cantidad actualizada en el carrito",
+      errors: [{ msg: "Cantidad actualizada en el carrito" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no está en el carrito")
       ? 404
-      : 500;
-    res.status(statusCode).json({ msg: error.message });
+      : 400;
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -109,13 +109,13 @@ const carritoDeleteItem = async (req, res = response) => {
 
     res.json({
       carrito,
-      msg: "Producto eliminado del carrito",
+      errors: [{ msg: "Producto eliminado del carrito" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no está en el carrito")
       ? 404
       : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -131,10 +131,10 @@ const carritoDelete = async (req, res = response) => {
 
     res.json({
       carrito,
-      msg: "Carrito vaciado",
+      errors: [{ msg: "Carrito vaciado" }],
     });
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ errors: [{ msg: error.message }] });
   }
 };
 

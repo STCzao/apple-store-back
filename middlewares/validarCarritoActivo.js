@@ -7,13 +7,13 @@ const validarCarritoActivo = async (req, res, next) => {
 
     if (!carrito) {
         return res.status(404).json({
-            msg: "Carrito no encontrado",
+            errors: [{ msg: "Carrito no encontrado" }],
         });
     }
 
     if (carrito.estado !== "activo") {
         return res.status(400).json({
-            msg: "El carrito no está activo",
+            errors: [{ msg: "El carrito no está activo" }],
         });
     }
 

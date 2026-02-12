@@ -35,12 +35,13 @@ const calcularTotalesCarrito = (items = []) => {
 
   const itemsCalculados = items.map((item) => {
     // Validar que el item tenga los campos necesarios
-    if (!item.precioSnapshot || !item.cantidad) {
+    if (item.precioSnapshot === undefined || item.precioSnapshot === null || 
+        item.cantidad === undefined || item.cantidad === null) {
       throw new Error("Cada item debe tener precioSnapshot y cantidad");
     }
 
-    // Validar que los valores sean números positivos
-    if (item.precioSnapshot < 0 || item.cantidad <= 0) {
+    // Validar que los valores sean números positivos (mayores a 0)
+    if (item.precioSnapshot <= 0 || item.cantidad <= 0) {
       throw new Error("El precio y la cantidad deben ser valores positivos");
     }
 

@@ -35,7 +35,7 @@ const ordenesGet = async (req, res = response) => {
     });
   } catch (error) {
     const statusCode = error.message.includes("no es válido") ? 400 : 500;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -63,7 +63,7 @@ const ordenGet = async (req, res = response) => {
           ? 400
           : 500;
 
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -78,7 +78,7 @@ const ordenGet = async (req, res = response) => {
 const ordenPost = async (req, res = response) => {
   try {
     const { usuario } = req;
-    const { datosFacturacion, moneda = "ars" } = req.body;
+    const { datosFacturacion, moneda = "ars" } = req.body || {};
 
     const orden = await ordenService.crearOrden(
       usuario._id,
@@ -88,7 +88,7 @@ const ordenPost = async (req, res = response) => {
 
     res.status(201).json({
       orden,
-      msg: "Orden creada exitosamente",
+      errors: [{ msg: "Orden creada exitosamente" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("carrito")
@@ -101,7 +101,7 @@ const ordenPost = async (req, res = response) => {
             ? 400
             : 500;
 
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -128,7 +128,7 @@ const ordenPut = async (req, res = response) => {
 
     res.json({
       orden,
-      msg: "Estado de orden actualizado",
+      errors: [{ msg: "Estado de orden actualizado" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe")
@@ -139,7 +139,7 @@ const ordenPut = async (req, res = response) => {
           ? 400
           : 500;
 
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -159,7 +159,7 @@ const ordenDelete = async (req, res = response) => {
 
     res.json({
       orden,
-      msg: "Orden cancelada exitosamente",
+      errors: [{ msg: "Orden cancelada exitosamente" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no existe")
@@ -170,7 +170,7 @@ const ordenDelete = async (req, res = response) => {
           ? 409 // Conflict
           : 500;
 
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 

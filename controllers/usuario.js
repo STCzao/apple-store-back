@@ -26,7 +26,7 @@ const usuariosGet = async (req, res = response) => {
 
     res.json({ total, usuarios });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -59,7 +59,7 @@ const perfilPut = async (req, res = response) => {
 
     res.json({ usuario: usuarioActualizado });
   } catch (error) {
-    res.status(400).json({ msg: error.message });
+    res.status(400).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -76,7 +76,7 @@ const usuarioGet = async (req, res = response) => {
     res.json({ usuario });
   } catch (error) {
     const statusCode = error.message.includes("no es válido") ? 400 : 404;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -93,7 +93,7 @@ const usuarioPut = async (req, res = response) => {
     res.json({ usuario });
   } catch (error) {
     const statusCode = error.message.includes("no encontrado") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -109,11 +109,11 @@ const usuarioDelete = async (req, res = response) => {
 
     res.json({
       usuario,
-      msg: "Usuario eliminado correctamente",
+      errors: [{ msg: "Usuario eliminado correctamente" }],
     });
   } catch (error) {
     const statusCode = error.message.includes("no encontrado") ? 404 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
@@ -130,11 +130,11 @@ const cambiarContrasena = async (req, res = response) => {
     await usuarioService.cambiarContrasena(usuario, contraseñaActual, contraseñaNueva);
 
     res.json({
-      msg: "Contraseña actualizada correctamente. Por seguridad, inicia sesión nuevamente.",
+      errors: [{ msg: "Contraseña actualizada correctamente. Por seguridad, inicia sesión nuevamente." }],
     });
   } catch (error) {
     const statusCode = error.message.includes("incorrecta") ? 401 : 400;
-    res.status(statusCode).json({ msg: error.message });
+    res.status(statusCode).json({ errors: [{ msg: error.message }] });
   }
 };
 
