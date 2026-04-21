@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check index.js)",
+      "Bash(node --check models/server.js)",
+      "Bash(node --check models/usuario.js)",
+      "Bash(node --check models/producto.js)",
+      "Bash(node --check models/favorito.js)",
+      "Bash(npm install *)",
+      "Read(//tmp/**)",
+      "Read(//d/tmp/fleeswap-backend/src/**)",
+      "Read(//d/tmp/fleeswap-backend/src/helpers/**)"
+    ]
+  }
+}
