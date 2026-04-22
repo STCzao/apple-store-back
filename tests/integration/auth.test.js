@@ -1,272 +1,231 @@
-// Tests de integración para endpoints de autenticación
-const request = require('supertest');
-const { getApp } = require('../helpers/appHelper');
-const Usuario = require('../../models/usuario');
-const { generarUsuarioCompleto } = require('../fixtures/usuarios');
+const request = require("supertest");
+const bcryptjs = require("bcryptjs");
+const { getApp } = require("../helpers/appHelper");
+const Usuario = require("../../src/models/Usuario");
 
-describe('Endpoints de Autenticación (/api/auth)', () => {
-    let app;
+const app = getApp();
 
-    beforeAll(() => {
-        app = getApp();
+const crearUsuarioVerificado = async (datos = {}) => {
+  const correo = datos.correo || `test${Date.now()}@ejemplo.com`;
+  const contraseña = datos.contraseña || "Password123!";
+  const hash = await bcryptjs.hash(contraseña, 10);
+
+  await Usuario.create({
+    nombreUsuario: datos.nombreUsuario || "Usuario Test",
+    correo,
+    contraseña: hash,
+    emailVerificado: true,
+    estado: datos.estado !== undefined ? datos.estado : true,
+    rol: datos.rol || "USER_ROLE",
+  });
+
+  return { correo, contraseña };
+};
+
+describe("Endpoints de Autenticación (/api/auth)", () => {
+  describe("POST /api/auth/registro", () => {
+    test("Debe registrar un nuevo usuario correctamente (201)", async () => {
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send({
+          nombreUsuario: "Usuario Registro",
+          correo: "registro@ejemplo.com",
+          contraseña: "Password123!",
+        })
+        .expect("Content-Type", /json/)
+        .expect(201);
+
+      expect(response.body.usuario).toBeDefined();
+      expect(response.body.usuario.correo).toBe("registro@ejemplo.com");
+      expect(response.body.usuario.contraseña).toBeUndefined();
+      expect(response.body.message).toBeDefined();
     });
 
-    describe('POST /api/auth/registro', () => {
-        
-        test('Debe registrar un nuevo usuario correctamente', async () => {
-            const nuevoUsuario = generarUsuarioCompleto({
-                nombreUsuario: 'Test Usuario',
-                correo: 'test@ejemplo.com'
-            });
+    test("Debe asignar rol USER_ROLE por defecto", async () => {
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send({
+          nombreUsuario: "Usuario Default",
+          correo: "default@ejemplo.com",
+          contraseña: "Password123!",
+        })
+        .expect(201);
 
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(nuevoUsuario)
-                .expect('Content-Type', /json/)
-                .expect(201);
-
-            expect(response.body.usuario).toBeDefined();
-            expect(response.body.usuario.correo).toBe(nuevoUsuario.correo);
-            expect(response.body.usuario.nombreUsuario).toBe(nuevoUsuario.nombreUsuario);
-            expect(response.body.usuario.contraseña).toBeUndefined();
-            expect(response.body.token).toBeDefined();
-            expect(typeof response.body.token).toBe('string');
-        });
-
-        test('Debe asignar rol USER_ROLE por defecto', async () => {
-            const nuevoUsuario = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Default',
-                correo: 'default@ejemplo.com'
-            });
-
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(nuevoUsuario)
-                .expect(201);
-
-            expect(response.body.usuario.rol).toBe('USER_ROLE');
-        });
-
-        test('Debe rechazar registro con correo duplicado', async () => {
-            const usuario = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Uno',
-                correo: 'duplicado@ejemplo.com'
-            });
-
-            // Primer registro
-            await request(app)
-                .post('/api/auth/registro')
-                .send(usuario)
-                .expect(201);
-
-            // Segundo registro con mismo correo
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(usuario)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-        });
-
-        test('Debe rechazar registro con datos incompletos', async () => {
-            const usuarioIncompleto = {
-                nombreUsuario: 'Usuario Sin Email',
-                contraseña: 'Password123!'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(usuarioIncompleto)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-            expect(Array.isArray(response.body.errors)).toBe(true);
-        });
-
-        test('Debe rechazar registro con correo inválido', async () => {
-            const usuarioEmailInvalido = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Email Malo',
-                correo: 'esto-no-es-un-email'
-            });
-
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(usuarioEmailInvalido)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-            expect(Array.isArray(response.body.errors)).toBe(true);
-        });
-
-        test('Debe rechazar registro con contraseña débil', async () => {
-            const usuarioPasswordDebil = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Password Débil',
-                correo: 'debil@ejemplo.com',
-                contraseña: '123'
-            });
-
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(usuarioPasswordDebil)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-            expect(Array.isArray(response.body.errors)).toBe(true);
-        });
+      expect(response.body.usuario.rol).toBe("USER_ROLE");
     });
 
-    describe('POST /api/auth/login', () => {
-        
-        beforeEach(async () => {
-            // Crear usuario de prueba antes de cada test de login
-            const bcryptjs = require('bcryptjs');
-            const salt = bcryptjs.genSaltSync(10);
-            const contraseñaEncriptada = bcryptjs.hashSync('Password123!', salt);
+    test("Debe rechazar registro con correo duplicado (409)", async () => {
+      const datos = {
+        nombreUsuario: "Usuario Dup",
+        correo: "dup@ejemplo.com",
+        contraseña: "Password123!",
+      };
 
-            const usuarioCompleto = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Login',
-                correo: 'login@ejemplo.com'
-            });
+      await request(app).post("/api/auth/registro").send(datos).expect(201);
 
-            usuarioCompleto.contraseña = contraseñaEncriptada;
-            await Usuario.create(usuarioCompleto);
-        });
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send(datos)
+        .expect(409);
 
-        test('Debe hacer login correctamente con credenciales válidas', async () => {
-            const credenciales = {
-                correo: 'login@ejemplo.com',
-                contraseña: 'Password123!'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send(credenciales)
-                .expect('Content-Type', /json/)
-                .expect(200);
-
-            expect(response.body.usuario).toBeDefined();
-            expect(response.body.usuario.correo).toBe(credenciales.correo);
-            expect(response.body.token).toBeDefined();
-            expect(typeof response.body.token).toBe('string');
-        });
-
-        test('Debe rechazar login con correo inexistente', async () => {
-            const credenciales = {
-                correo: 'noexiste@ejemplo.com',
-                contraseña: 'Password123!'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send(credenciales)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-        });
-
-        test('Debe rechazar login con contraseña incorrecta', async () => {
-            const credenciales = {
-                correo: 'login@ejemplo.com',
-                contraseña: 'PasswordIncorrecta123!'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send(credenciales)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-        });
-
-        test('Debe rechazar login con datos incompletos', async () => {
-            const credencialesIncompletas = {
-                correo: 'login@ejemplo.com'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send(credencialesIncompletas)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-            expect(Array.isArray(response.body.errors)).toBe(true);
-        });
-
-        test('Debe rechazar login de usuario inactivo', async () => {
-            // Crear usuario inactivo
-            const bcryptjs = require('bcryptjs');
-            const salt = bcryptjs.genSaltSync(10);
-            const contraseñaEncriptada = bcryptjs.hashSync('Password123!', salt);
-
-            const usuarioInactivo = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Inactivo',
-                correo: 'inactivo@ejemplo.com',
-                contraseña: contraseñaEncriptada,
-                estado: false
-            });
-
-            await Usuario.create(usuarioInactivo);
-
-            const credenciales = {
-                correo: 'inactivo@ejemplo.com',
-                contraseña: 'Password123!'
-            };
-
-            const response = await request(app)
-                .post('/api/auth/login')
-                .send(credenciales)
-                .expect(400);
-
-            expect(response.body.errors).toBeDefined();
-        });
+      expect(response.body.message).toBeDefined();
     });
 
-    describe('GET /api/auth/renovar', () => {
-        
-        let token;
-        let usuario;
+    test("Debe rechazar registro sin correo (400)", async () => {
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send({ nombreUsuario: "Sin Email", contraseña: "Password123!" })
+        .expect(400);
 
-        beforeEach(async () => {
-            // Registrar usuario y obtener token
-            const nuevoUsuario = generarUsuarioCompleto({
-                nombreUsuario: 'Usuario Token',
-                correo: 'token@ejemplo.com'
-            });
-
-            const response = await request(app)
-                .post('/api/auth/registro')
-                .send(nuevoUsuario);
-
-            token = response.body.token;
-            usuario = response.body.usuario;
-        });
-
-        test('Debe renovar token válido correctamente', async () => {
-            const response = await request(app)
-                .get('/api/auth/renovar')
-                .set('x-token', token)
-                .expect(200);
-
-            expect(response.body.usuario).toBeDefined();
-            expect(response.body.usuario.uid).toBe(usuario.uid);
-            expect(response.body.token).toBeDefined();
-        });
-
-        test('Debe rechazar request sin token', async () => {
-            const response = await request(app)
-                .get('/api/auth/renovar')
-                .expect(401);
-
-            expect(response.body.errors).toBeDefined();
-        });
-
-        test('Debe rechazar token inválido', async () => {
-            const response = await request(app)
-                .get('/api/auth/renovar')
-                .set('x-token', 'token-invalido-123')
-                .expect(401);
-
-            expect(response.body.errors).toBeDefined();
-        });
+      expect(response.body.message).toBeDefined();
     });
+
+    test("Debe rechazar registro con correo inválido (400)", async () => {
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send({
+          nombreUsuario: "Email Malo",
+          correo: "esto-no-es-un-email",
+          contraseña: "Password123!",
+        })
+        .expect(400);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar registro con contraseña débil (400)", async () => {
+      const response = await request(app)
+        .post("/api/auth/registro")
+        .send({
+          nombreUsuario: "Password Debil",
+          correo: "debil@ejemplo.com",
+          contraseña: "123",
+        })
+        .expect(400);
+
+      expect(response.body.message).toBeDefined();
+    });
+  });
+
+  describe("POST /api/auth/login", () => {
+    test("Debe hacer login correctamente con credenciales válidas (200)", async () => {
+      const { correo, contraseña } = await crearUsuarioVerificado({
+        correo: "login@ejemplo.com",
+      });
+
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ correo, contraseña })
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(response.body.usuario).toBeDefined();
+      expect(response.body.usuario.correo).toBe(correo);
+      expect(response.body.accessToken).toBeDefined();
+      expect(typeof response.body.accessToken).toBe("string");
+      expect(response.headers["set-cookie"]).toBeDefined();
+    });
+
+    test("Debe rechazar login con correo inexistente (401)", async () => {
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ correo: "noexiste@ejemplo.com", contraseña: "Password123!" })
+        .expect(401);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar login con contraseña incorrecta (401)", async () => {
+      const { correo } = await crearUsuarioVerificado({
+        correo: "wrongpass@ejemplo.com",
+      });
+
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ correo, contraseña: "PasswordIncorrecta123!" })
+        .expect(401);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar login sin correo (400)", async () => {
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ contraseña: "Password123!" })
+        .expect(400);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar login de usuario inactivo (403)", async () => {
+      const { correo, contraseña } = await crearUsuarioVerificado({
+        correo: "inactivo@ejemplo.com",
+        estado: false,
+      });
+
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ correo, contraseña })
+        .expect(403);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar login de usuario sin email verificado (403)", async () => {
+      const hash = await bcryptjs.hash("Password123!", 10);
+      await Usuario.create({
+        nombreUsuario: "No Verificado",
+        correo: "noverif@ejemplo.com",
+        contraseña: hash,
+        emailVerificado: false,
+      });
+
+      const response = await request(app)
+        .post("/api/auth/login")
+        .send({ correo: "noverif@ejemplo.com", contraseña: "Password123!" })
+        .expect(403);
+
+      expect(response.body.message).toBeDefined();
+    });
+  });
+
+  describe("POST /api/auth/refresh", () => {
+    test("Debe renovar el access token con cookie válida (200)", async () => {
+      const { correo, contraseña } = await crearUsuarioVerificado({
+        correo: "refresh@ejemplo.com",
+      });
+
+      const loginRes = await request(app)
+        .post("/api/auth/login")
+        .send({ correo, contraseña });
+
+      const cookies = loginRes.headers["set-cookie"];
+
+      const response = await request(app)
+        .post("/api/auth/refresh")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(response.body.accessToken).toBeDefined();
+      expect(response.body.usuario).toBeDefined();
+    });
+
+    test("Debe rechazar refresh sin cookie (401)", async () => {
+      const response = await request(app)
+        .post("/api/auth/refresh")
+        .expect(401);
+
+      expect(response.body.message).toBeDefined();
+    });
+  });
+
+  describe("POST /api/auth/logout", () => {
+    test("Debe cerrar sesión y limpiar la cookie (200)", async () => {
+      const response = await request(app)
+        .post("/api/auth/logout")
+        .expect(200);
+
+      expect(response.body.message).toBeDefined();
+    });
+  });
 });
