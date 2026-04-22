@@ -228,4 +228,52 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
       expect(response.body.message).toBeDefined();
     });
   });
+
+  describe("POST /api/auth/reenviar-verificacion", () => {
+    test("Debe responder con mensaje genérico para correo no verificado (200)", async () => {
+      const hash = await bcryptjs.hash("Password123!", 10);
+      await Usuario.create({
+        nombreUsuario: "Sin Verificar",
+        correo: "sinverif@ejemplo.com",
+        contraseña: hash,
+        emailVerificado: false,
+      });
+
+      const response = await request(app)
+        .post("/api/auth/reenviar-verificacion")
+        .send({ correo: "sinverif@ejemplo.com" })
+        .expect(200);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe responder con mensaje genérico para correo inexistente (200)", async () => {
+      const response = await request(app)
+        .post("/api/auth/reenviar-verificacion")
+        .send({ correo: "noexiste@ejemplo.com" })
+        .expect(200);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe responder con mensaje genérico para usuario ya verificado (200)", async () => {
+      const { correo } = await crearUsuarioVerificado({ correo: "yaverif@ejemplo.com" });
+
+      const response = await request(app)
+        .post("/api/auth/reenviar-verificacion")
+        .send({ correo })
+        .expect(200);
+
+      expect(response.body.message).toBeDefined();
+    });
+
+    test("Debe rechazar correo inválido (400)", async () => {
+      const response = await request(app)
+        .post("/api/auth/reenviar-verificacion")
+        .send({ correo: "no-es-un-correo" })
+        .expect(400);
+
+      expect(response.body.message).toBeDefined();
+    });
+  });
 });

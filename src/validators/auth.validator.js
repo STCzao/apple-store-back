@@ -21,4 +21,8 @@ const resetPasswordValidator = [
   body("contraseña").isLength({ min: 6 }).withMessage("La nueva contraseña debe tener al menos 6 caracteres"),
 ];
 
-module.exports = { registerValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator };
+const reenviarVerificacionValidator = [
+  body("correo").isEmail().withMessage("El correo no es válido").normalizeEmail(),
+];
+
+module.exports = { registerValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator, reenviarVerificacionValidator };
