@@ -10,6 +10,7 @@ const categoriaRoutes = require("./routes/categoria.routes");
 const productoRoutes = require("./routes/producto.routes");
 const favoritoRoutes = require("./routes/favorito.routes");
 const errorHandler = require("./middlewares/errorHandler");
+const { authLimiter, generalLimiter } = require("./middlewares/rateLimiter");
 const logger = require("./config/logger");
 
 const app = express();
@@ -45,11 +46,11 @@ app.use((req, res, next) => {
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/usuario", usuarioRoutes);
-app.use("/api/categoria", categoriaRoutes);
-app.use("/api/producto", productoRoutes);
-app.use("/api/favorito", favoritoRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/usuario", generalLimiter, usuarioRoutes);
+app.use("/api/categoria", generalLimiter, categoriaRoutes);
+app.use("/api/producto", generalLimiter, productoRoutes);
+app.use("/api/favorito", generalLimiter, favoritoRoutes);
 
 app.use((_req, res) => res.status(404).json({ ok: false, message: "Ruta no encontrada" }));
 

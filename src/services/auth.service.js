@@ -46,8 +46,6 @@ const login = async (correo, contraseña) => {
 };
 
 const refresh = async (refreshToken) => {
-  if (!refreshToken) throw new AppError("Refresh token no proporcionado", 401);
-
   let payload;
   try {
     payload = verifyRefreshToken(refreshToken);
@@ -75,6 +73,20 @@ const confirmarEmail = async (token) => {
     tokenVerificacion: null,
     tokenVerificacionExp: null,
   });
+};
+
+const reenviarVerificacion = async (correo) => {
+  const usuario = await usuarioRepo.findByCorreo(correo);
+  if (!usuario || usuario.emailVerificado) return; // No revelar si el correo existe ni si ya está verificado
+
+  const tokenVerificacion = crypto.randomBytes(32).toString("hex");
+
+  await usuarioRepo.update(usuario._id, {
+    tokenVerificacion,
+    tokenVerificacionExp: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  });
+
+  return { usuario, tokenVerificacion };
 };
 
 const solicitarResetPassword = async (correo) => {
@@ -105,4 +117,4 @@ const resetPassword = async (token, contraseñaNueva) => {
   });
 };
 
-module.exports = { registrar, login, refresh, confirmarEmail, solicitarResetPassword, resetPassword, REFRESH_COOKIE_OPTIONS };
+module.exports = { registrar, login, refresh, confirmarEmail, reenviarVerificacion, solicitarResetPassword, resetPassword, REFRESH_COOKIE_OPTIONS };
