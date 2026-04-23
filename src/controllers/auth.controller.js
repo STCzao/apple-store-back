@@ -1,6 +1,6 @@
 const AppError = require("../helpers/AppError");
 const authService = require("../services/auth.service");
-const emailService = require("../services/email.service");
+const emailService = require("../helpers/email");
 const logger = require("../config/logger");
 const { REFRESH_COOKIE_OPTIONS } = require("../services/auth.service");
 

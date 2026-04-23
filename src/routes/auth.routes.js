@@ -1,12 +1,13 @@
 const { Router } = require("express");
 const authenticate = require("../middlewares/authenticate");
 const validarCampos = require("../middlewares/validarCampos");
+const validarMayorEdad = require("../middlewares/validarMayorEdad");
 const { registerValidator, loginValidator, forgotPasswordValidator, resetPasswordValidator, reenviarVerificacionValidator } = require("../validators/auth.validator");
 const { register, login, refresh, logout, confirmarEmail, reenviarVerificacion, forgotPassword, resetPassword } = require("../controllers/auth.controller");
 
 const router = Router();
 
-router.post("/registro", registerValidator, validarCampos, register);
+router.post("/registro", registerValidator, validarCampos, validarMayorEdad, register);
 router.post("/login", loginValidator, validarCampos, login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);

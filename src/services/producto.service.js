@@ -2,8 +2,8 @@ const AppError = require("../helpers/AppError");
 const sanitizarTexto = require("../helpers/sanitizarTexto");
 const productoRepo = require("../repositories/producto.repository");
 const categoriaRepo = require("../repositories/categoria.repository");
-const emailService = require("./email.service");
-const cloudinaryService = require("./cloudinary.service");
+const emailService = require("../helpers/email");
+const cloudinaryService = require("../helpers/cloudinary");
 const logger = require("../config/logger");
 
 const obtenerProductos = async (limite = 12, desde = 0) => {

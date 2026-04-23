@@ -12,7 +12,7 @@ const REFRESH_COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-const registrar = async ({ nombreUsuario, correo, contraseña }) => {
+const registrar = async ({ nombreUsuario, correo, contraseña, fechaNacimiento }) => {
   const existe = await usuarioRepo.findByCorreo(correo);
   if (existe) throw new AppError("El correo ya está registrado", 409);
 
@@ -23,6 +23,7 @@ const registrar = async ({ nombreUsuario, correo, contraseña }) => {
     nombreUsuario: sanitizarTexto(nombreUsuario),
     correo,
     contraseña: hash,
+    fechaNacimiento,
     tokenVerificacion,
     tokenVerificacionExp: new Date(Date.now() + 24 * 60 * 60 * 1000),
   });
