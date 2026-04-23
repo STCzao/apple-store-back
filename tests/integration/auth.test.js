@@ -13,6 +13,7 @@ const crearUsuarioVerificado = async (datos = {}) => {
   await Usuario.create({
     nombreUsuario: datos.nombreUsuario || "Usuario Test",
     correo,
+    fechaNacimiento: datos.fechaNacimiento || "1990-01-01",
     contraseña: hash,
     emailVerificado: true,
     estado: datos.estado !== undefined ? datos.estado : true,
@@ -30,7 +31,9 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
         .send({
           nombreUsuario: "Usuario Registro",
           correo: "registro@ejemplo.com",
+          fechaNacimiento: "1990-05-15",
           contraseña: "Password123!",
+          confirmarContraseña: "Password123!",
         })
         .expect("Content-Type", /json/)
         .expect(201);
@@ -47,7 +50,9 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
         .send({
           nombreUsuario: "Usuario Default",
           correo: "default@ejemplo.com",
+          fechaNacimiento: "1990-05-15",
           contraseña: "Password123!",
+          confirmarContraseña: "Password123!",
         })
         .expect(201);
 
@@ -58,7 +63,9 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
       const datos = {
         nombreUsuario: "Usuario Dup",
         correo: "dup@ejemplo.com",
+        fechaNacimiento: "1990-05-15",
         contraseña: "Password123!",
+        confirmarContraseña: "Password123!",
       };
 
       await request(app).post("/api/auth/registro").send(datos).expect(201);
@@ -176,6 +183,7 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
       await Usuario.create({
         nombreUsuario: "No Verificado",
         correo: "noverif@ejemplo.com",
+        fechaNacimiento: "1990-01-01",
         contraseña: hash,
         emailVerificado: false,
       });
@@ -235,6 +243,7 @@ describe("Endpoints de Autenticación (/api/auth)", () => {
       await Usuario.create({
         nombreUsuario: "Sin Verificar",
         correo: "sinverif@ejemplo.com",
+        fechaNacimiento: "1990-01-01",
         contraseña: hash,
         emailVerificado: false,
       });

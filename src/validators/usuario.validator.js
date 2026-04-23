@@ -18,8 +18,20 @@ const actualizarUsuarioValidator = [
 ];
 
 const cambiarContrasenaValidator = [
-  body("contraseñaActual").notEmpty().withMessage("La contraseña actual es obligatoria"),
-  body("contraseñaNueva").isLength({ min: 6 }).withMessage("La nueva contraseña debe tener al menos 6 caracteres"),
+  body("contraseñaActual")
+    .exists({ checkFalsy: true })
+    .withMessage("La contraseña actual es obligatoria"),
+  body("contraseñaNueva")
+    .exists({ checkFalsy: true })
+    .withMessage("La nueva contraseña es requerida")
+    .isLength({ min: 8, max: 64 })
+    .withMessage("La contraseña debe tener entre 8 y 64 caracteres")
+    .matches(/[A-Z]/)
+    .withMessage("La contraseña debe tener al menos una mayúscula")
+    .matches(/\d/)
+    .withMessage("La contraseña debe tener al menos un número")
+    .matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
+    .withMessage("La contraseña debe tener al menos un carácter especial"),
 ];
 
 module.exports = { actualizarPerfilValidator, actualizarUsuarioValidator, cambiarContrasenaValidator };

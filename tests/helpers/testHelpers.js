@@ -10,6 +10,7 @@ const crearUsuarioVerificado = async (datos = {}) => {
   const usuario = await Usuario.create({
     nombreUsuario: datos.nombreUsuario || "Usuario Test",
     correo,
+    fechaNacimiento: datos.fechaNacimiento || "1990-01-01",
     contraseña: hash,
     emailVerificado: true,
     estado: datos.estado !== undefined ? datos.estado : true,
