@@ -48,8 +48,8 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/usuario", generalLimiter, usuarioRoutes);
-app.use("/api/categoria", generalLimiter, categoriaRoutes);
-app.use("/api/producto", generalLimiter, productoRoutes);
+app.use("/api/categorias", generalLimiter, categoriaRoutes);
+app.use("/api/productos", generalLimiter, productoRoutes);
 app.use("/api/favorito", generalLimiter, favoritoRoutes);
 
 app.use((_req, res) => res.status(404).json({ ok: false, message: "Ruta no encontrada" }));

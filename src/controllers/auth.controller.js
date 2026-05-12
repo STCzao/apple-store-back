@@ -38,14 +38,16 @@ const login = async (req, res, next) => {
 const refresh = async (req, res, next) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return next(new AppError("Refresh token no proporcionado", 401));
+    if (!refreshToken) return next(new AppError("No hay sesión activa", 401));
 
     const { usuario, accessToken, refreshToken: newToken } = await authService.refresh(refreshToken);
 
     res.cookie("refreshToken", newToken, REFRESH_COOKIE_OPTIONS);
     res.json({ usuario, accessToken });
   } catch (err) {
-    next(err instanceof AppError ? err : new AppError(err.message, 500));
+    const error = err instanceof AppError ? err : new AppError(err.message, 500);
+    if (error.status === 401) res.clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS);
+    next(error);
   }
 };
 
