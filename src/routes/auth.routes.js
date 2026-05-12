@@ -11,7 +11,7 @@ router.post("/registro", registerValidator, validarCampos, validarMayorEdad, reg
 router.post("/login", loginValidator, validarCampos, login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
-router.get("/confirmar/:token", confirmarEmail);
+router.post("/confirmar/:token", confirmarEmail);
 router.post("/reenviar-verificacion", reenviarVerificacionValidator, validarCampos, reenviarVerificacion);
 router.post("/forgot-password", forgotPasswordValidator, validarCampos, forgotPassword);
 router.post("/reset-password/:token", resetPasswordValidator, validarCampos, resetPassword);

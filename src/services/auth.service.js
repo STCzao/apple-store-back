@@ -67,12 +67,13 @@ const refresh = async (refreshToken) => {
 const confirmarEmail = async (token) => {
   const usuario = await usuarioRepo.findOneConTokens({ tokenVerificacion: token });
   if (!usuario) throw new AppError("Token de verificación inválido", 400);
-  if (usuario.tokenVerificacionExp < new Date()) throw new AppError("El token de verificación expiró", 400);
+  if (usuario.tokenVerificacionExp < new Date()) throw new AppError("El token de verificación expirado", 400);
+
+  if (usuario.emailVerificado) return; // segunda llamada (StrictMode): ya verificado, éxito silencioso
 
   await usuarioRepo.update(usuario._id, {
     emailVerificado: true,
-    tokenVerificacion: null,
-    tokenVerificacionExp: null,
+    // token no se nullea - expira solo por tokenVerificacionExp
   });
 };
 
